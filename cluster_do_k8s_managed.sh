@@ -24,10 +24,6 @@ HEREDOC
 # Program Functions
 ###############################################################################
 
-_setup_full() {
-  _setup_terraform
-  # _setup_ansible
-}
 
 _setup_terraform() {
   printf "Setup Terraform resources\\n"
@@ -49,9 +45,7 @@ _destroy_infra() {
 _main() {
   # Avoid complex option parsing when only one program option is expected.
   PROJECT_DIR=$(pwd)
-  INFRA_NAME=do_k8s_managed
-  ANSIBLE_TF_DIR=$PROJECT_DIR/terraform/$INFRA_NAME # variable used by ansible terraform inventory to find terraform/
-
+  ANSIBLE_TF_DIR=$PROJECT_DIR/terraform # variable used by ansible terraform inventory to find terraform/
 
   if [[ "${1:-}" =~ ^-h|--help$  ]]
   then
@@ -59,18 +53,9 @@ _main() {
   elif [[ "${1:-}" =~ ^setup_terraform$  ]]
   then
     _setup_terraform
-  elif [[ "${1:-}" =~ ^setup_ansible$  ]]
-  then
-    _setup_ansible
-  elif [[ "${1:-}" =~ ^setup_dockerstack$  ]]
-  then
-    _setup_dockerstack
   elif [[ "${1:-}" =~ ^destroy_infra$  ]]
   then
     _destroy_infra
-  elif [[ "${1:-}" =~ ^setup_full$  ]]
-  then
-    _setup_full
   else
     _print_help
   fi

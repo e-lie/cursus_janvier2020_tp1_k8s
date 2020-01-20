@@ -5,9 +5,10 @@ provider "digitalocean" {
     token = "${var.do_api_token}"
 }
 
-resource "digitalocean_kubernetes_cluster" "foo" { # }"tp_cluster" {
+resource "digitalocean_kubernetes_cluster" "tp_cluster" {
   name    = "k8s-tp-cluster"
   region  = "lon1"
+  
   # Grab the latest version slug from `doctl kubernetes options versions`
   version = "1.16.2-do.2"
 
