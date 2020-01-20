@@ -34,7 +34,7 @@ _setup_terraform() {
   printf "Setup Terraform resources\\n"
   printf "##############################################\\n"
   source .env
-  cd "$PROJECT_DIR/terraform"
+  cd "$TERRAFORM_DIR"
   terraform init
   terraform plan
   terraform apply -auto-approve 
@@ -44,8 +44,8 @@ _setup_terraform() {
 _setup_ansible() {
   printf "Setup infra VPS using Ansible\\n"
   printf "##############################################\\n"
-  source .env
-  cd "$PROJECT_DIR/ansible"
+
+  cd "$ANSIBLE_DIR"
   ansible-galaxy install -r roles/requirements.yml -p roles
   ansible-playbook site_setup.yml
   cd "$PROJECT_DIR"
@@ -54,23 +54,24 @@ _setup_ansible() {
 _setup_dockerstack() {
   printf "Setup docker stacks in swarm\\n"
   printf "##############################################\\n"
-  source .env
-  cd "$PROJECT_DIR/ansible"
+
+  cd "$ANSIBLE_DIR"
   ansible-playbook playbooks/deploy_docker_stacks.yml
   cd "$PROJECT_DIR"
 }
 
 _destroy_infra() {
+  cd "$TERRAFORM_DIR"
   printf "DESTROY Terraform resources\\n"
   printf "##############################################\\n"
-  source .env
-  cd "$PROJECT_DIR/terraform"
+
   terraform destroy -auto-approve
+  cd "$PROJECT_DIR"
 }
 
 _main() {
   # Avoid complex option parsing when only one program option is expected.
-  PROJECT_DIR=$(pwd)
+  source .env 
 
   if [[ "${1:-}" =~ ^-h|--help$  ]]
   then
