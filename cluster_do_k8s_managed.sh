@@ -24,11 +24,6 @@ HEREDOC
 # Program Functions
 ###############################################################################
 
-_setup_full() {
-  _setup_terraform
-  _setup_ansible
-  _setup_dockerstack
-}
 
 _setup_terraform() {
   printf "Setup Terraform resources\\n"
@@ -41,37 +36,19 @@ _setup_terraform() {
   cd "$PROJECT_DIR"
 }
 
-_setup_ansible() {
-  printf "Setup infra VPS using Ansible\\n"
-  printf "##############################################\\n"
-
-  cd "$ANSIBLE_DIR"
-  ansible-galaxy install -r roles/requirements.yml -p roles
-  ansible-playbook site_setup.yml
-  cd "$PROJECT_DIR"
-}
-
-_setup_dockerstack() {
-  printf "Setup docker stacks in swarm\\n"
-  printf "##############################################\\n"
-
-  cd "$ANSIBLE_DIR"
-  ansible-playbook playbooks/deploy_docker_stacks.yml
-  cd "$PROJECT_DIR"
-}
-
 _destroy_infra() {
   cd "$TERRAFORM_DIR"
   printf "DESTROY Terraform resources\\n"
   printf "##############################################\\n"
-
+  cd "$PROJECT_DIR/$ANSIBLE_TF_DIR"
   terraform destroy -auto-approve
   cd "$PROJECT_DIR"
 }
 
 _main() {
   # Avoid complex option parsing when only one program option is expected.
-  source .env 
+  PROJECT_DIR=$(pwd)
+  ANSIBLE_TF_DIR=$PROJECT_DIR/terraform # variable used by ansible terraform inventory to find terraform/
 
   if [[ "${1:-}" =~ ^-h|--help$  ]]
   then
@@ -79,18 +56,9 @@ _main() {
   elif [[ "${1:-}" =~ ^setup_terraform$  ]]
   then
     _setup_terraform
-  elif [[ "${1:-}" =~ ^setup_ansible$  ]]
-  then
-    _setup_ansible
-  elif [[ "${1:-}" =~ ^setup_dockerstack$  ]]
-  then
-    _setup_dockerstack
   elif [[ "${1:-}" =~ ^destroy_infra$  ]]
   then
     _destroy_infra
-  elif [[ "${1:-}" =~ ^setup_full$  ]]
-  then
-    _setup_full
   else
     _print_help
   fi
