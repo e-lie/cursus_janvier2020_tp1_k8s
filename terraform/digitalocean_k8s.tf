@@ -8,7 +8,7 @@ provider "digitalocean" {
 resource "digitalocean_kubernetes_cluster" "tp_cluster" {
   name    = "k8s-tp-cluster"
   region  = "lon1"
-  
+
   # Grab the latest version slug from `doctl kubernetes options versions`
   version = "1.16.2-do.2"
 
@@ -19,16 +19,11 @@ resource "digitalocean_kubernetes_cluster" "tp_cluster" {
   }
 }
 
-# output "name" {
-#   value = "value"
-#   digitalocean_kubernetes_cluster.foo.kube_config[0].token
-# }
-
-resource "local_file" "kubeconfigdo" {
-  content  = digitalocean_kubernetes_cluster.foo.kube_config[0].raw_config
-  filename = "${path.module}/kubeconfig_do"
+output "cluster" {
+  value = digitalocean_kubernetes_cluster.tp_cluster
 }
 
-output "kubeconfig" {
-  value = digitalocean_kubernetes_cluster.foo.kube_config[0].raw_config
+resource "local_file" "kubeconfigdo" {
+  content  = digitalocean_kubernetes_cluster.tp_cluster.kube_config[0].raw_config
+  filename = "${path.module}/kubeconfig_do"
 }
